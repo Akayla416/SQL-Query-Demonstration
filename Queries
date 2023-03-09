@@ -1,0 +1,90 @@
+CREATE TABLE `Employee` (
+  `employee_id` int NOT NULL,
+  `first_name` varchar(30) NOT NULL,
+  `last_name` varchar(30) NOT NULL,
+  `hire_date` date NOT NULL,
+  `job_title` varchar(30) NOT NULL,
+  `shop_id` int NOT NULL,
+  PRIMARY KEY (`employee_id`));
+  -- "Coffee Shop" table created --
+CREATE TABLE `coffee_shop` (
+  `shop_id` int NOT NULL,
+  `shop_name` varchar(50) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `state` char(2) NOT NULL,
+  PRIMARY KEY (`shop_id`));
+  -- "Coffee" table created --
+CREATE TABLE `coffee` (
+  `coffee_id` int NOT NULL,
+  `shop_id` int NOT NULL,
+  `supplier_id` int NOT NULL,
+  `coffee_name` varchar(30) NOT NULL,
+  `price_per_pound` numeric(5,2) NOT NULL,
+  PRIMARY KEY (`coffee_id`));
+  -- "Supplier" table created --
+CREATE TABLE `supplier` (
+  `supplier_id` int NOT NULL,
+  `company_name` varchar(50) NOT NULL,
+  `country` varchar(30) NOT NULL,
+  `sales_contact_name` varchar(60),
+  `email` varchar(50) NOT NULL,
+  PRIMARY KEY (`supplier_id`));
+  -- FK created for Employee table --
+  
+ALTER TABLE `employee`
+ADD FOREIGN KEY (shop_id) REFERENCES coffee_shop;
+-- FK created for Coffee table --
+ALTER TABLE `coffee`
+ADD FOREIGN KEY (shop_id) REFERENCES coffee_shop(shop_id),
+ADD FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id);
+-- Add 3+ rows of data to each table --
+INSERT INTO `coffee_shop`
+VALUES  (2, 'Cardinal Coffee', 'Flower Mound', 'TX'),
+		(3, 'Mutable Menu', 'Dallas', 'TX'),
+        (4, 'All the Fixins"', 'Paris', 'TX');
+        
+INSERT INTO `supplier`
+VALUES  (10, 'Roasted Coffee Co.', 'USA', 'Alexander Chancellor', 'ace2023@gmail.com'),
+		(20, 'Coastside Coffee Refinery', 'Canada', 'Ryder Justice', 'rjustice@ccrefinery.com'),
+		(30, 'Land O''Lattes', 'USA', 'Orion Chancellor', 'oriondc@lattesland.com'),
+        (40, 'Cafe Cielo', 'Mexico', 'Javier Rodelo', 'jr2020cafecielo.com');
+        
+INSERT INTO `coffee`
+VALUES 	(1, 3, 30, 'Virgo Venti Blend', 10.50),
+		(2, 2, 30, 'Capricorn Colombian Blend', 12.50),
+        (3, 4, 30, 'Taurus Tea', 8.25),
+        (4, 2, 10, 'Aries Americano', 05.25),
+        (5, 4, 40, 'Aquarius Affogato', 09.50),
+        (6, 3, 20, 'Pisces Pour-Over', 03.25);
+        
+INSERT INTO `employee`
+VALUES  (416, 'Ari', 'Stella', '2020-12-04', 'Barista', 2),
+		(820, 'Chaz', 'McFreely', '2018-07-22', 'Store manager', 4),
+        (927, 'Arista', 'McFreely', '2020-09-01', 'Lead Barista', 3);
+
+CREATE VIEW employee_full_names AS
+SELECT employee_id,
+	   CONCAT (first_name, ' ',last_name) employee_full_name,
+       hire_date,
+       job_title,
+       shop_id
+FROM `employee`;
+
+SELECT sales_contact_name
+FROM supplier
+WHERE supplier_id >= 25;
+-- JOIN FOR 3 TABLES --
+
+SELECT * FROM employee
+LEFT JOIN coffee_shop ON employee.shop_id = coffee_shop.shop_id
+LEFT JOIN coffee ON coffee_shop.shop_id = coffee.shop_id
+UNION ALL
+
+SELECT * FROM employee
+RIGHT JOIN coffee_shop ON employee.shop_id = coffee_shop.shop_id
+LEFT JOIN coffee ON coffee_shop.shop_id = coffee.shop_id
+UNION ALL
+
+SELECT * FROM employee
+RIGHT JOIN coffee_shop ON employee.shop_id = coffee_shop.shop_id
+RIGHT JOIN coffee ON coffee_shop.shop_id = coffee.shop_id;
